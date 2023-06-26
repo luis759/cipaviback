@@ -1,0 +1,3 @@
+php -s localhost:8080 router.php PARA QUE CORRA
+php_mbstring.dll agregar a php ini
+si me da error el sqlsrv revizar odbc
