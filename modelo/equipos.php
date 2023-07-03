@@ -51,8 +51,8 @@ class equipos_modelo{
         }
         return $this->equipos;
     }
-    public function get_equipos_ByCodigo($codigo){
-        $sql = "SELECT * ,(convert(varchar,CODIGO,3)+'-'+NOMBRE) as NOMBREGLO FROM TNQ4_2Q53 where activo= '1' AND codigo='".$codigo."'";
+    public function get_equipos_ByCodigo($codigo,$EMPR){
+        $sql = "SELECT * ,(convert(varchar,CODIGO,3)+'-'+NOMBRE) as NOMBREGLO FROM TNQ4_2Q53 where activo= '1' AND codigo='".$codigo."' AND IDEMP=".strval($EMPR)."";
         $stmt = sqlsrv_query(  $this->db, $sql );
         if( $stmt === false) {
             die( print_r( sqlsrv_errors(), true) );

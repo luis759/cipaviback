@@ -5,7 +5,7 @@ class proyectos_modelo{
     /*
     LA TABLAS DE proyectos ES C4PT_PR4Y
     ID:int /not null
-    IDESP:int /not null
+    IDEMP:int /not null
     IDPROY:int /not null
     NCONT:nvarchar(50,0) /not null
     NOMBRE:nvarchar(MAX,0) /not null
@@ -38,6 +38,32 @@ class proyectos_modelo{
     }
     public function get_proyectos(){
         $sql = "SELECT *,('000'+convert(varchar,IDPROY,3)+'-'+NCONT)NOMBREGLO FROM C4PT_PR4Y where activo= '1'";
+        $stmt = sqlsrv_query(  $this->db, $sql );
+        if( $stmt === false) {
+            die( print_r( sqlsrv_errors(), true) );
+        }
+        
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) {
+            array_push($this->proyectos,$row);
+        }
+        return $this->proyectos;
+    }
+    public function get_proyectos_Bycod_emp($CODIGO,$EMPR){
+        $sql = "SELECT * FROM C4PT_PR4Y WHERE activo= '1' AND IDPROY='".$CODIGO."' AND IDEMP=".strval($EMPR)."";
+        $stmt = sqlsrv_query(  $this->db, $sql );
+        if( $stmt === false) {
+            die( print_r( sqlsrv_errors(), true) );
+        }
+        
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) {
+            array_push($this->proyectos,$row);
+        }
+        return $this->proyectos;
+    }
+    public function get_proyectos_ByFechaVigente($FECHAS,$EMPR){
+        
+        $FECHA=date("Y-m-d", strtotime($FECHAS));
+        $sql = "SELECT * FROM C4PT_PR4Y_VIGENTES('".$EMPR."','".$FECHA."')";
         $stmt = sqlsrv_query(  $this->db, $sql );
         if( $stmt === false) {
             die( print_r( sqlsrv_errors(), true) );

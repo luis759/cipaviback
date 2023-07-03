@@ -2,6 +2,7 @@
 class responsable_modelo{
     private $db;
     private $responsable;
+    private $responsable2;
     /*
     LA TABLAS DE responsable ES APP0_R2SP
     ID:int /not null
@@ -18,6 +19,7 @@ class responsable_modelo{
     public function __construct(){
         $this->db=Conectar::conexion();
         $this->responsable=array();
+        $this->responsable2=array();
     }
     public function get_responsable(){
         $sql = "SELECT * FROM APP0_R2SP WHERE ACTIVO=1";
@@ -31,19 +33,20 @@ class responsable_modelo{
         }
         return $this->responsable;
     }
-    public function reg_responsable($IDEMP,$COD,$CEDULA,$NOMBRES,$USUARIO){
-        $sql = "SELECT * FROM APP0_R2SP WHERE COD=".strval($COD)." AND IDEMP=".strval($IDEMP)." AND ACTIVO=1";
+    public function reg_responsable($IDEMP,$CEDULA,$NOMBRES,$USUARIO){
+        $sql = "SELECT * FROM APP0_R2SP WHERE IDEMP=".strval($IDEMP)." AND CEDULA='".strval($CEDULA)."' AND ACTIVO=1";
         $stmt = sqlsrv_query(  $this->db, $sql );
         $existe=false;
         if( $stmt === false) {
             die( print_r( sqlsrv_errors(), true) );
         }
         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) {
+            array_push($this->responsable2,$row);
            $existe=true;
         }
         if(!$existe){
             
-                $sql = "SELECT MAX(ID) as Maximo FROM APP0_R2SP";
+                $sql = "SELECT MAX(ID) as Maximo,MAX(COD) as codigo FROM APP0_R2SP where IDEMP=".strval($IDEMP)." ";
                 $stmt = sqlsrv_query(  $this->db, $sql );
                 if( $stmt === false) {
                     die( print_r( sqlsrv_errors(), true) );
@@ -53,17 +56,44 @@ class responsable_modelo{
                     array_push($this->responsable,$row);
                     }
                 $valorMaximo=$this->responsable[0]['Maximo']+1;
+                $valorCodigo=$this->responsable[0]['codigo']+1;
             $sql = "INSERT INTO APP0_R2SP (ID,IDEMP,COD,CEDULA,Nombres,Vigente,usuario,Activo,TEMPORAL,VERSIONES) VALUES ( ?,?,?,?,?,?,?,?,?,?)";
-            $params = array($valorMaximo,$IDEMP,$COD,$CEDULA,$NOMBRES,1,$USUARIO,1,date("Y-m-d H:i:s"),1);
+            $params = array($valorMaximo,$IDEMP,$valorCodigo,$CEDULA,$NOMBRES,1,$USUARIO,1,date("Y-m-d H:i:s"),1);
      
             $stmt = sqlsrv_query( $this->db, $sql, $params);
              if( $stmt === false) {
                  die( print_r( sqlsrv_errors(), true) );
              }else{
-                 return array("CEDULA"=>$CEDULA,"ID"=>$valorMaximo,"COD"=>$COD,"IDEMP"=>$IDEMP,"Paso"=>true);
+                 return array("CEDULA"=>$CEDULA,"ID"=>$valorMaximo,"COD"=>$valorCodigo,"IDEMP"=>$IDEMP,"Paso"=>true);
              }
         }else{
-            return array("CEDULA"=>$CEDULA,"COD"=>$COD,"IDEMP"=>$IDEMP,"message"=>"El Responsable esta activo y existe","Paso"=>false);
+            $sql = "UPDATE APP0_R2SP SET ACTIVO=(?) WHERE IDEMP=".strval($IDEMP)." AND CEDULA='".strval($CEDULA)."'";
+            $params = array(0);
+            $stmt = sqlsrv_query( $this->db, $sql, $params);
+             if( $stmt === false) {
+                 die( print_r( sqlsrv_errors(), true) );
+             }else{
+                $sql = "SELECT MAX(ID) as Maximo,MAX(COD) as codigo FROM APP0_R2SP where IDEMP=".strval($IDEMP)." ";
+                $stmt = sqlsrv_query(  $this->db, $sql );
+                if( $stmt === false) {
+                    die( print_r( sqlsrv_errors(), true) );
+                }
+        
+                while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) {
+                    array_push($this->responsable,$row);
+                    }
+                $valorMaximo=$this->responsable[0]['Maximo']+1;
+                $valorCodigo=$this->responsable2[0]['COD'];
+                $sql = "INSERT INTO APP0_R2SP (ID,IDEMP,COD,CEDULA,Nombres,Vigente,usuario,Activo,TEMPORAL,VERSIONES) VALUES ( ?,?,?,?,?,?,?,?,?,?)";
+                $params = array($valorMaximo,$IDEMP,$valorCodigo,$CEDULA,$NOMBRES,1,$USUARIO,1,date("Y-m-d H:i:s"),1);
+     
+                $stmt = sqlsrv_query( $this->db, $sql, $params);
+                 if( $stmt === false) {
+                 die( print_r( sqlsrv_errors(), true) );
+                }else{
+                 return array("CEDULA"=>$CEDULA,"ID"=>$valorMaximo,"COD"=>$valorCodigo,"IDEMP"=>$IDEMP,"Paso"=>true);
+                }
+             }
         }
     }
     public function get_responsable_Bycod_emp($CODIGO,$EMPR){

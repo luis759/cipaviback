@@ -69,8 +69,8 @@ class reportetransportedet_modelo{
          return array("UltimoId"=>$valorMaximo,"Paso"=>true,"Veces"=>count($DETALLE));
     }
     
-    public function get_horas_NORC_EMP($NORC,$IDEMP){
-        $sql = "SELECT * FROM TNQ4_C4T1_D2T1 where  IDEMP=".strval($IDEMP)." AND NORC=".strval($NORC)."";
+    public function get_detalles_NORC_EMP($NORC,$IDEMP){
+        $sql = "SELECT * FROM TNQ4_C4T1_D2T1 where  IDEMP=".strval($IDEMP)." AND NORC=".strval($NORC)." AND ACTIVO=1 ORDER BY NOVIAJE ASC";
         $stmt = sqlsrv_query(  $this->db, $sql );
         if( $stmt === false) {
             die( print_r( sqlsrv_errors(), true) );

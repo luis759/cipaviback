@@ -9,6 +9,10 @@ if($opcion=='getproyectos'){
     echo json_encode($ValorRetorno);
 }else if (!isset($valorUso) && $opcion=='reg'){
     //Pagina de ingreso para el registro de proyectos
+}else if ($opcion=='getproyectosFecha'){
+    //Pagina de ingreso para el registro de proyectos
+    $ValorRetorno=array("proyectos"=>$proyectos->get_proyectos_ByFechaVigente($FECHA,$IDEMP));
+    echo json_encode($ValorRetorno);
 }
 
 ?>

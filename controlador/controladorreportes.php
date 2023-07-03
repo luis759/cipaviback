@@ -10,7 +10,11 @@ $reportetransporte=new reportetransporte_modelo();
 $reportetransportedet=new reportetransportedet_modelo();
 //Validacion para uso de algunas funciones especificas
 if($opcion=='getreportesByIDEMP-IDPROY-DESDEYHASTA'){
-    echo  json_encode(array('Reportes'=>$reportescamprin->get_reporte_By_IDEMP_FECHA_CODIGO($IDEMP,$DESDE,$HASTA,$CODIGO)));
+    if($IDTIPO==1){
+        echo  json_encode(array('Reportes'=>$reportescamprin->get_reporte_By_IDEMP_FECHA_CODIGO($IDEMP,$DESDE,$HASTA,$CODIGO)));
+    }else{
+        echo  json_encode(array('Reportes'=>$reportetransporte->get_reporte_By_IDEMP_FECHA_CODIGO($IDEMP,$DESDE,$HASTA,$CODIGO)));
+    }
 }
 else if (!isset($valorUso) && $opcion=='regReport1'){
     if(empty($_POST['OBSERVA'])){
@@ -48,21 +52,28 @@ else if (!isset($valorUso) && $opcion=='regReport1'){
     }else{
         $OBSERVA=$_POST['OBSERVA'];
     }
-    if(empty($_POST['HORATANQUEO'])){
+    if($_POST['TANQUEOBOOL']){
         $HORATANQUEO=NULL;
-    }else{
-        $HORATANQUEO=$_POST['HORATANQUEO'];
-    }
-    if(empty($_POST['KILOMETRAJETANQUEO'])){
         $KILOMETRAJETANQUEO=NULL;
-    }else{
-        $KILOMETRAJETANQUEO=(float)$_POST['KILOMETRAJETANQUEO'];
-    }
-    if(empty($_POST['GALONESTANQUEADOS'])){
         $GALONESTANQUEADOS=NULL;
     }else{
-        $GALONESTANQUEADOS=(float)$_POST['GALONESTANQUEADOS'];
+        if(empty($_POST['HORATANQUEO'])){
+            $HORATANQUEO=NULL;
+        }else{
+            $HORATANQUEO=$_POST['HORATANQUEO'];
+        }
+        if(empty($_POST['KILOMETRAJETANQUEO'])){
+            $KILOMETRAJETANQUEO=NULL;
+        }else{
+            $KILOMETRAJETANQUEO=(float)$_POST['KILOMETRAJETANQUEO'];
+        }
+        if(empty($_POST['GALONESTANQUEADOS'])){
+            $GALONESTANQUEADOS=NULL;
+        }else{
+            $GALONESTANQUEADOS=(float)$_POST['GALONESTANQUEADOS'];
+        }
     }
+   
     $DETALLE=json_decode($_POST['DETALLE'],true);
     $IDEMP=$_POST['IDEMP'];
     $IDPROY=$_POST['IDPROY'];
@@ -72,7 +83,6 @@ else if (!isset($valorUso) && $opcion=='regReport1'){
     $FECHA=$_POST['FECHA'];
     $NIVELCOMBINICIO=(int)$_POST['NIVELCOMBINICIO'];
     $NIVELCOMBFIN=(int)$_POST['NIVELCOMBFIN'];
-
     $valorprincipal=$reportetransporte->reg_reportetransporte($IDEMP,$IDPROY,$FECHA,$CODIGO,$RESPONSABLE,$NIVELCOMBINICIO,$NIVELCOMBFIN,$OBSERVA,$HORATANQUEO,$KILOMETRAJETANQUEO,$GALONESTANQUEADOS,$USUARIO);
     $NORC=$valorprincipal['NORC'];
     $retorno=array("Principal"=>$valorprincipal,"Detalles"=>$reportetransportedet->reg_reportetransportedet($IDEMP,$NORC,$DETALLE));

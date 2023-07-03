@@ -9,11 +9,10 @@ if($opcion=='getresponsable'){
     echo json_encode($ValorRetorno);
 }else if (!isset($valorUso) && $opcion=='reg'){
     $IDEMP=$_POST['IDEMP'];
-    $COD=$_POST['COD'];
     $CEDULA=$_POST['CEDULA'];
     $NOMBRES=$_POST['NOMBRES'];
     $USUARIO=$_POST['USUARIO'];
-    $ValorRetorno=array("responsables"=>$responsable->reg_responsable($IDEMP,$COD,$CEDULA,$NOMBRES,$USUARIO));
+    $ValorRetorno=array("responsables"=>$responsable->reg_responsable($IDEMP,$CEDULA,$NOMBRES,$USUARIO));
     echo json_encode($ValorRetorno);
 }
 
